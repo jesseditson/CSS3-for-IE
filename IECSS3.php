@@ -1,12 +1,12 @@
 <?php
-/// A simple php class to fix IE styles on non-accepted CSS3 values, such as nth-child.
+/// A simple php class to fix IE styles on non-accepted CSS3 selectors.
 /// Uses jQuery or prototype to substitute styles when they aren't compatible.
 
 /// This class was made with support for IE 7+ in mind, but takes into consideration some IE 6 rules.
 /// Do not expect this script to fix sites in IE 6, but it will fix some things.
 
 /// This class will only work with external stylesheets.
-/// Inline styles will be overwritten when using this class.
+/// Inline styles on incompatible IE selectors will be overwritten when using this class.
 /// Speech and media query related rules are not currently supported.
 /// CSS functions are not currently supported.
 /// rgba, hsl, and hsla colors are not currently supported.
@@ -19,8 +19,7 @@
 /// Microsoft has provided documentation on supported css selectors, it can be found here:
 /// http://msdn.microsoft.com/en-us/library/cc351024(VS.85).aspx
 
-/// Single line shorthand rules are not substituted, and may not work with some libraries.
-/// Support for shorthand rules will be added in the future.
+/// Single line shorthand rules are supported, but may not be complete. Let me know if you find any issues using them.
 
 /// Rule substitution is not supported yet, but an array of unsupported or patially supported rules has been added for future support.
 

@@ -1,0 +1,28 @@
+CSS3 for IE Readme:
+
+First off, the easy stuff - This work and all other works in this folder are ©2010, Jesse Ditson. Feel free to move, change, or redistribute the IECSS3 class, just don't modify the signature on the header.
+
+Usage for this class is outlined in the included usage.php file. It's very simple, I recommend calling the draw() method from inside your <head>, but the script will work from anywhere on the page.
+
+The purpose of this class is to abolish conditional stylesheets for IE compatibility, and instead auto detect when a user is on IE, and substitute all the incompatible selectors with jQuery or prototype inline styling at runtime.
+
+For the substitutions to work, make sure that you're telling IE to display the page in Standards mode, this script won't work in quirks mode (well, it won't work well. It'll still do stuff.)
+
+You can tell the browser to be in Standards mode by declaring a doctype, like this:
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+More info about doctypes can be found here:
+http://www.w3.org/QA/2002/04/valid-dtd-list.html
+
+and a good layman's description can be found here:
+http://www.quirksmode.org/css/quirksmode.html
+
+Please let me know if you run into any issues with the script, and I'll try to fix them. This script is however provided with no warrantee, and I'm pretty busy, so I unfortunately can't make any promises.
+
+If you feel so inclined, I do accept donations via paypal, (jesse.ditson@gmail.com) but in no way expect them.
+
+Enjoy!
+
+Jesse Ditson
+jesse.ditson@gmail.com
+jesseditson.com
