@@ -79,7 +79,7 @@ class IECSS3 {
 	}
 	/// Draws javascript - accepts an optional value to add styles with this method
 	public function draw($styles=false){
-		//if($this->browser_is_ie()){
+		if($this->browser_is_ie()){
 			if($styles!=false){
 				$this->add_styles($styles);
 			}
@@ -97,7 +97,7 @@ class IECSS3 {
 			echo '</script>';
 			echo "<!-- end IE Incompatible rule overrides -->\n";
 			
-		//}
+		}
 	}
 	
 	/// Start the processing for our css
