@@ -1,12 +1,12 @@
 <?php
-/// A simple php class to fix IE styles on non-accepted CSS3 selectors.
+/// A simple php class to fix IE styles on non-accepted CSS3 values, such as nth-child.
 /// Uses jQuery or prototype to substitute styles when they aren't compatible.
 
 /// This class was made with support for IE 7+ in mind, but takes into consideration some IE 6 rules.
 /// Do not expect this script to fix sites in IE 6, but it will fix some things.
 
 /// This class will only work with external stylesheets.
-/// Inline styles on incompatible IE selectors will be overwritten when using this class.
+/// Inline styles will be overwritten when using this class.
 /// Speech and media query related rules are not currently supported.
 /// CSS functions are not currently supported.
 /// rgba, hsl, and hsla colors are not currently supported.
@@ -19,7 +19,8 @@
 /// Microsoft has provided documentation on supported css selectors, it can be found here:
 /// http://msdn.microsoft.com/en-us/library/cc351024(VS.85).aspx
 
-/// Single line shorthand rules are supported, but may not be complete. Let me know if you find any issues using them.
+/// Single line shorthand rules are not substituted, and may not work with some libraries.
+/// Support for shorthand rules will be added in the future.
 
 /// Rule substitution is not supported yet, but an array of unsupported or patially supported rules has been added for future support.
 
@@ -78,11 +79,12 @@ class IECSS3 {
 	}
 	/// Draws javascript - accepts an optional value to add styles with this method
 	public function draw($styles=false){
-		if($this->browser_is_ie()){
+		//if($this->browser_is_ie()){
 			if($styles!=false){
 				$this->add_styles($styles);
 			}
 			/// Draw!
+			echo "<!-- begin IE Incompatible rule overrides - http://github.com/jesseditson/CSS3-for-IE -->\n";
 			echo '<script type="text/javascript">'."\n";
 			$js = "";
 			foreach($this->currentStyles as $style){
@@ -93,8 +95,9 @@ class IECSS3 {
 			}
 			$this->draw_js_wrapper($js, $this->library);
 			echo '</script>';
+			echo "<!-- end IE Incompatible rule overrides -->\n";
 			
-		}
+		//}
 	}
 	
 	/// Start the processing for our css
@@ -119,8 +122,10 @@ class IECSS3 {
 	private function parse_shortcodes($rules){
 		$newRules = array();
 		//print_r($rules);
-		foreach($rules as $rule=>$value){
-			$newRules = $this->replace_shortcode($rule, $value, $newRules);
+		if(is_array($rules)){
+			foreach($rules as $rule=>$value){
+				$newRules = $this->replace_shortcode($rule, $value, $newRules);
+			}
 		}
 		//print_r($newRules);
 		return $newRules;
@@ -177,7 +182,7 @@ class IECSS3 {
 					if($this->regex_rule($val, 'font-size')){
 						$nVal = $this->regex_rule($val, 'font-size');
 						$array['font-size'] = $nVal[0];
-						if($nVal[1]) $array['line-height'] = $nVal[1];
+						if(isset($nVal[1])) $array['line-height'] = $nVal[1];
 					}
 				}
 				break;
@@ -231,6 +236,7 @@ class IECSS3 {
 	private function regex_rule($r, $v){
 		$matched = false;
 		$matches = array();
+		$p='';
 		switch($v){
 			case 'color':
 				$p = '/(#?[1-9a-f^\(^\ ]{3,6}|[a-z^\(^\ ]+[\(]?[0-9,]{11}?[\)]?)/i';
@@ -273,10 +279,14 @@ class IECSS3 {
 				break;
 		}
 		if(strlen($p) > 0) preg_match_all($p, $r, $matches);
-		if(count($matches[1]) == 1){
-			return $matches[1];
-		} else if($matched != false){
-			return $matched;
+		if(isset($matches[1])){
+			if(count($matches[1]) == 1){
+				return $matches[1];
+			} else if($matched != false){
+				return $matched;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -290,6 +300,7 @@ class IECSS3 {
 				$rules = $this->parse_shortcodes($rules);
 				if(is_array($rules) && count($rules) > 0){
 					// begin the script
+					$jsString .= "try{";
 					switch($library){
 						case 'jQuery':
 							$jsString .= '$("'.$this->escape_meta_jquery($selector).'").css({';
@@ -317,12 +328,13 @@ class IECSS3 {
 					// end the script
 					switch($library){
 						case 'jQuery':
-							$jsString .= "});\n";
+							$jsString .= "});";
 							break;
 						case 'prototype':
-							$jsString .= "});});\n";
+							$jsString .= "});});";
 							break;
 					}
+					$jsString .= "};catch(err){/*console.log('CSS Rule Error for ".$selector.": '+err.description);*/}\n";
 				}
 			}
 		}
@@ -375,10 +387,11 @@ class IECSS3 {
 		///$known = array('msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape', 'konqueror', 'gecko'); 
 		//preg_match_all( '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#', strtolower( $_SERVER[ 'HTTP_USER_AGENT' ]), $browser ); 
 		//if($browser['browser'][0]=='msie')
+		if(isset($_SERVER['HTTP_USER_AGENT'])){
+			preg_match_all('/(MSIE)/i', $_SERVER['HTTP_USER_AGENT'], $browser);
+		}
 		
-		preg_match_all('/(MSIE)/i', $_SERVER['HTTP_USER_AGENT'], $browser);
-		
-		if(strtolower($browser[0][0])=='msie'){
+		if(strtolower(@$browser[0][0])=='msie'){
 			return true; 
 		} else {
 			return false;
